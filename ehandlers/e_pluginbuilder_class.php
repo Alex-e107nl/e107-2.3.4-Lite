@@ -1306,6 +1306,7 @@ TEMPLATE;
 				case 'blob':
 				case 'mediumblob':
 				case 'longblob':
+				default:
 				$array = array(
 					'textarea'	=> EPL_ADLAN_208,
 					'bbarea'	=> EPL_ADLAN_209,
@@ -1318,8 +1319,6 @@ TEMPLATE;
 					);
 				break;
 
-				default:
-				 $array = [];
 			}
 
 		//	asort($array);
