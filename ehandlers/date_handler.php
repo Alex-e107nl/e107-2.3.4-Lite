@@ -372,7 +372,7 @@ class e_date
 
 	
 	/**
-	 * Convert date string back to integer (unix timestamp)
+	 * Convert date string back to int (unix timestamp)
 	 * NOTE: after some tests, strptime (compat mode) is adding +1 sec. after parsing to time, investigate!
 	 * 
 	 * @param string $date_string

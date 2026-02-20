@@ -2074,7 +2074,7 @@ class e107plugin
 	/**
 	 * Type number to type name
 	 * @param int $typeId
-	 * @return string type name
+	 * @return string|int type name
 	 */
 	private function ue_field_type_name($typeId)
 	{

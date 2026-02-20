@@ -3047,7 +3047,7 @@ class e_admin_model extends e_front_model
      *
      * @param boolen $from_post
 	 * @param boolean $session_messages
-	 * @return int|false inserted ID or false on error
+	 * @return int inserted ID or false on error
      */
     public function insert($from_post = true, $session_messages = false)
     {
@@ -3400,7 +3400,7 @@ class e_tree_model extends e_front_model
 	{
 		if(isset($array['total']))
 		{
-			$this->setTotal((integer) $array['total']);
+			$this->setTotal((int) $array['total']);
 			unset($array['total']);
 		}
 		$class_name = $this->getParam('model_class', 'e_model');
@@ -4023,7 +4023,7 @@ class e_front_tree_model extends e_tree_model
 	 * @param mixed $syncvalue value to be used for model data synchronization (db value could be something like '1-field_name'), null - no sync
 	 * @param boolean $sanitize [optional] default true
 	 * @param boolean $session_messages [optional] default false
-	 * @return int|false updated count or false on error
+	 * @return int updated count or false on error
 	 */
 	public function batchUpdate($field, $value, $ids, $syncvalue = null, $sanitize = true, $session_messages = false)
 	{
@@ -4116,7 +4116,7 @@ class e_admin_tree_model extends e_front_tree_model
 	 * @param mixed $ids
 	 * @param boolean $destroy [optional] destroy object instance after db delete
 	 * @param boolean $session_messages [optional]
-	 * @return int|false deleted records number or false on DB error
+	 * @return int deleted records number or false on DB error
 	 */
 	public function delete($ids, $destroy = true, $session_messages = false)
 	{

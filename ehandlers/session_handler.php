@@ -381,7 +381,7 @@ public function getData($key = null, $clear = false)
      * Set value in current session namespace
      * Equals to $_SESSION[NAMESPACE][$key] = $value
      * @param string $key Also accepts path-based format (e.g., key1/key2)
-     * @param mixed $value Any value type (string, array, integer, etc.)
+     * @param mixed $value Any value type (string, array, int, etc.)
      * @return e_session
      */
     public function set($key, $value)

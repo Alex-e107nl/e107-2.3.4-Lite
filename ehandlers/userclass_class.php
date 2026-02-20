@@ -671,7 +671,7 @@ class user_class
 	 *
 	 *	@param string $listnum - class number of the parent. Is negative if the class is 'Everyone except...' (Must be a string because 0 == -0)
 	 *	@param int $nest_level - indicates our level in the tree - 0 is the top level; increases as we descend the tree. Positive value.
-	 *	@param string $current_value - comma-separated list of integers indicating classes selected. (Spaces not permitted)
+	 *	@param string $current_value - comma-separated list of ints indicating classes selected. (Spaces not permitted)
 	 *	@param array $perms - list of classes we are allowed to display
 	 *	@param string $opt_options - passed to callback function; not otherwise used
 	 */

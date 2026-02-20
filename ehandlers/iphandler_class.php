@@ -208,7 +208,7 @@ class eIPHandler
 	 *	Add an entry to the banlist log file (which is a simple text file)
 	 *	A date/time string is prepended to the line
 	 *
-	 *	@param int $reason - numeric reason code, usually in range -10..+10
+	 *	@param int    $reason - numeric reason code, usually in range -10..+10
 	 *	@param string $message - additional text as required (length not checked, but should be less than 100 characters or so
 	 *
 	 *	@return void
@@ -352,7 +352,7 @@ class eIPHandler
 	/**
 	 *	Takes appropriate action for a blacklisted IP address
 	 *
-	 *	@param int $code - integer value < 0 specifying the ban reason.
+	 *	@param int $code - int value < 0 specifying the ban reason.
 	 *
 	 *	@return void (may not even return)
 	 *
@@ -1081,10 +1081,10 @@ class eIPHandler
 	 * Returns TRUE if ban accepted.
 	 * Returns FALSE if ban not accepted (e.g. because on whitelist, or invalid IP specified)
 	 *
-	 * @param int $bantype - either one of the BAN_TYPE_xxx constants, or a legacy value as above
+	 * @param int    $bantype - either one of the BAN_TYPE_xxx constants, or a legacy value as above
 	 * @param string $ban_message
 	 * @param string $ban_ip
-	 * @param int $ban_user
+	 * @param int    $ban_user
 	 * @param string $ban_notes
 	 *
 	 * @return boolean|int check result - FALSE if ban rejected. TRUE if ban added. 1 if IP address already banned
@@ -1522,7 +1522,7 @@ class banlistManager
 
 	/**
 	 *	Return string corresponding to a ban type
-	 *	@param int $banType - constant representing the ban type
+	 *	@param int  $banType - constant representing the ban type
 	 *	@param bool $forMouseover - if true, its the (usually longer) explanatory string for a mouseover
 	 *
 	 *	@return string

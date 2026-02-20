@@ -455,11 +455,11 @@ class news {
 	 * Render a news Grid. (currently used in news_grid_menu ) // new v2.1.5
 	 * @param array $parm = [
 	 *      'caption'		    => (string)     text or constant
-	 *      'titleLimit'		=> (integer)    number of chars fo news title
-	 *      'summaryLimit'		=> (integer)    number of chars for new summary
+	 *      'titleLimit'		=> (int)        number of chars fo news title
+	 *      'summaryLimit'		=> (int)        number of chars for new summary
 	 *      'source'		    => (string)     latest (latest news items) | sticky (news items) | template (assigned to news-grid layout)
-	 *      'order'		        => (integer)    n.news_datestamp DESC
-	 *      'limit'		        => (integer)    10
+	 *      'order'		        => (int)        n.news_datestamp DESC
+	 *      'limit'		        => (int)        10
 	 *      'template'		    => (string)     default | or any key as defined in news_grid_template.php
 	 *  ]
 	 * @return string

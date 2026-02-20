@@ -648,7 +648,7 @@ class e_db_mysql implements e_db
 	* <code>
 	* e107::getDb('sql2')->select("chatbox", "*", "ORDER BY cb_datestamp DESC LIMIT $from, ".$view, true);</code>
 	*
-	* @return int|false Number of rows or false on error
+	* @return int Number of rows or false on error
 	*/
 	public function select($table, $fields = '*', $arg = '', $noWhere = false, $debug = FALSE, $log_type = '', $log_remark = '')
 	{

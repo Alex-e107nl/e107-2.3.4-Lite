@@ -294,7 +294,7 @@ class e_media
 	 * 'class' data is optional, 'id' key is ignored
 	 * 
 	 * @param array $datas associative array, db keys should be passed without the leading 'media_cat_' e.g. 'class', 'type', etc.
-	 * @return int|false last inserted ID or false on error
+	 * @return int last inserted ID or false on error
 	 */
 	public function createCategory($datas)
 	{
