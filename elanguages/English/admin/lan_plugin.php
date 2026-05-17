@@ -265,8 +265,5 @@ return [
     'EPL_ADLAN_254' => "This will check your plugin's language files for errors and common or duplicate LAN definitions.",
     'EPL_ADLAN_255' => "Overwrite Files",
     'EPL_ADLAN_256' => "Skipped [x] (already exists)",
-    'EPL_ADLAN_257' => "Readonly",
-    'LAN_PLUGIN_REGISTRY_XML_NOT_FOUND'      => "plugin.xml not found at expected path ([x])",
-    'LAN_PLUGIN_REGISTRY_XML_MISSING_FIELDS' => "plugin.xml is missing required fields: [x]",
-    'LAN_PLUGIN_INSTALL_UNAVAILABLE'         => "Install",
+    'EPL_ADLAN_257' => "Readonly"
 ];
