@@ -24,12 +24,20 @@
 const e107_INIT = true;
 
 
-function thumbExceptionHandler(Throwable $exception)
+function thumbExceptionHandler(Throwable $e)
 {
 	http_response_code(500);
 	echo "Fatal Thumbnail Error\n";
-	echo $exception->getMessage();
 
+	 $message = sprintf(
+        "Exception: %s, File: %s, Line: %d, Trace: %s",
+        $e->getMessage(),
+        $e->getFile(),
+        $e->getLine(),
+        $e->getTraceAsString()
+    );
+    var_dump($message);
+	error_log($message);
 }
 
 function thumbErrorHandler($errno, $errstr, $errfile, $errline)
@@ -73,7 +81,7 @@ class e_thumbpage
 	function __construct()
 	{
 
-	$self = realpath(__DIR__);
+		$self = realpath(__DIR__);
 
 		$e_ROOT = $self."/";
 
@@ -89,8 +97,7 @@ class e_thumbpage
 		$mySQLprefix = '';
 
 		// Config
-		// Capture return value to support v2.4+ array format. Legacy format declares
-		// globals ($mySQLdefaultdb, $ADMIN_DIRECTORY...) into local scope as before.
+
 		$config = include($self.DIRECTORY_SEPARATOR.'e107_config.php');
 
 		// support early include feature
@@ -102,48 +109,6 @@ class e_thumbpage
 
 		ob_end_clean(); // Precaution - clearout utf-8 BOM or any other garbage in e107_config.php
 
-		// v2.4+ array format: extract DB and path info from returned array
-		if(is_array($config) && !empty($config['paths']))
-		{
-			$mySQLdefaultdb = $config['database']['db'] ?? '';
-			$mySQLprefix    = $config['database']['prefix'] ?? '';
-
-			// Map lowercase keys ('admin', 'images', ...) to *_DIRECTORY locals so
-			// the compact() call below picks them up the same way as legacy format.
-			$pathKeyMap = [
-				'admin'      => 'ADMIN_DIRECTORY',
-				'files'      => 'FILES_DIRECTORY',
-				'images'     => 'IMAGES_DIRECTORY',
-				'themes'     => 'THEMES_DIRECTORY',
-				'plugins'    => 'PLUGINS_DIRECTORY',
-				'handlers'   => 'HANDLERS_DIRECTORY',
-				'languages'  => 'LANGUAGES_DIRECTORY',
-				'help'       => 'HELP_DIRECTORY',
-				'docs'       => 'DOCS_DIRECTORY',
-				'media'      => 'MEDIA_DIRECTORY',
-				'system'     => 'SYSTEM_DIRECTORY',
-				'cache'      => 'CACHE_DIRECTORY',
-				'logs'       => 'LOGS_DIRECTORY',
-				'downloads'  => 'DOWNLOADS_DIRECTORY',
-				'uploads'    => 'UPLOADS_DIRECTORY',
-				'core'       => 'CORE_DIRECTORY',
-				'web'        => 'WEB_DIRECTORY',
-			];
-			foreach($config['paths'] as $k => $v)
-			{
-				if(isset($pathKeyMap[$k]))
-				{
-					${$pathKeyMap[$k]} = $v;
-				}
-			}
-
-			if(!isset($E107_CONFIG) && !empty($config['other']))
-			{
-				$E107_CONFIG = $config['other'];
-			}
-		}
-		unset($config);
-
 		if(empty($HANDLERS_DIRECTORY))
 		{
 			$HANDLERS_DIRECTORY = 'e107_handlers/'; // quick fix for CLI Unit test.
@@ -152,43 +117,38 @@ class e_thumbpage
 		$tmp = $self.DIRECTORY_SEPARATOR.$HANDLERS_DIRECTORY;
 
 		//Core functions - now API independent
-		@require($tmp.DIRECTORY_SEPARATOR.'core_functions.php');
+		require($tmp.DIRECTORY_SEPARATOR.'core_functions.php');
 		//e107 class
-		@require($tmp.DIRECTORY_SEPARATOR.'e107_class.php');
+		require($tmp.DIRECTORY_SEPARATOR.'e107_class.php');
 
-		$e107_paths = compact(
-			'ADMIN_DIRECTORY',
-			'FILES_DIRECTORY',
-			'IMAGES_DIRECTORY',
-			'THEMES_DIRECTORY',
-			'PLUGINS_DIRECTORY',
-			'HANDLERS_DIRECTORY',
-			'LANGUAGES_DIRECTORY',
-			'HELP_DIRECTORY',
-			'DOWNLOADS_DIRECTORY',
-			'UPLOADS_DIRECTORY',
-			'MEDIA_DIRECTORY',
-			'CACHE_DIRECTORY',
-			'LOGS_DIRECTORY',
-			'WEB_DIRECTORY',
-			'SYSTEM_DIRECTORY',
-			'CORE_DIRECTORY'
-		);
+		if(empty($config['paths'])) // old e107_config.php format.
+		{
+			$dirNames = ['ADMIN_DIRECTORY', 'FILES_DIRECTORY', 'IMAGES_DIRECTORY', 'THEMES_DIRECTORY', 'PLUGINS_DIRECTORY', 'HANDLERS_DIRECTORY', 'LANGUAGES_DIRECTORY', 'HELP_DIRECTORY', 'DOWNLOADS_DIRECTORY','UPLOADS_DIRECTORY','SYSTEM_DIRECTORY', 'MEDIA_DIRECTORY','CACHE_DIRECTORY','LOGS_DIRECTORY', 'CORE_DIRECTORY', 'WEB_DIRECTORY'];
 
-		$e107 = e107::getInstance();
+			$e107_paths = [];
+			foreach ($dirNames as $name)
+			{
+			    if (isset($$name))
+			    {
+			        $e107_paths[$name] = $$name;
+			    }
+			}
 
-		$e107->site_path = substr(md5($mySQLdefaultdb.".".$mySQLprefix),0,10);
+			$legacy_sql_info = compact('mySQLserver', 'mySQLuser', 'mySQLpassword', 'mySQLdefaultdb', 'mySQLprefix');
+			$sql_info = array_combine(array_map(function($k) {
+				return str_replace('mySQL', '', $k);
+				}, array_keys($legacy_sql_info)),
+		        $legacy_sql_info
+			);
+		}
+		else // New e107_config.php format. v2.4+
+		{
+			$e107_paths = $config['paths'];
+			$sql_info = $config['database'];
+			$E107_CONFIG = $config['other'] ?? [];
+		}
 
-		$e107->prepare_request();
-		$e107->setDirs($e107_paths, varset($E107_CONFIG, array()));
-		$e107->set_constants();
-		$e107->set_paths();
-		$e107->file_path = $e107->fix_windows_paths($self)."/";
-		$e107->set_base_path();
-		$e107->set_request(false);
-
-		unset($tmp, $self);
-		$e107->set_urls(false);
+		$e107 = e107::getInstance()->initCore($e107_paths, e_ROOT, $sql_info, varset($E107_CONFIG, array()));
 		// basic Admin area detection - required for proper path parsing
 		define('ADMIN', strpos(e_SELF, (e107::getFolder('admin')) != false || strpos(e_PAGE, 'admin') !== false));
 
@@ -196,7 +156,7 @@ class e_thumbpage
 		//  See https://github.com/e107inc/e107/issues/3033
 		$e107->set_urls_deferred();
 
-		$pref = $e107->getPref();
+		$pref = e107::getPref();
 
 
 		require_once(e_HANDLER."e_thumbnail_class.php");
