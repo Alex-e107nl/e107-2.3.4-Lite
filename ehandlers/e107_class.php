@@ -780,22 +780,24 @@ class e107
 	public function overridableDirs()
 	{
 		return array(
-			'ADMIN_DIRECTORY'     => 'e107_admin/',
-			'FILES_DIRECTORY'     => 'e107_files/',
-			'IMAGES_DIRECTORY'    => 'e107_images/',
-			'THEMES_DIRECTORY'    => 'e107_themes/',
-			'PLUGINS_DIRECTORY'   => 'e107_plugins/',
-			'HANDLERS_DIRECTORY'  => 'e107_handlers/',
-			'LANGUAGES_DIRECTORY' => 'e107_languages/',
-			'HELP_DIRECTORY'      => 'e107_docs/help/',
-			'DOWNLOADS_DIRECTORY' => 'e107_media/files/',
-			'UPLOADS_DIRECTORY'   => 'e107_system/temp/',
-			'SYSTEM_DIRECTORY'    => 'e107_system/',
-			'MEDIA_DIRECTORY'     => 'e107_media/',
-			'CACHE_DIRECTORY'     => 'e107_system/cache/',
-			'LOGS_DIRECTORY'      => 'e107_system/logs/',
-			'CORE_DIRECTORY'      => 'e107_core/',
-			'WEB_DIRECTORY'       => 'e107_web/',
+			'ADMIN_DIRECTORY'     => 'eadmin/',
+			'FILES_DIRECTORY'     => 'efiles/',
+			'IMAGES_DIRECTORY'    => 'eimages/',
+			'THEMES_DIRECTORY'    => 'ethemes/',
+			'PLUGINS_DIRECTORY'   => 'eplugins/',
+			'HANDLERS_DIRECTORY'  => 'ehandlers/',
+			'LANGUAGES_DIRECTORY' => 'elanguages/',
+			'DOCS_DIRECTORY'      => 'edocs/',
+			'HELP_DIRECTORY'      => 'edocs/help/',
+			'DOWNLOADS_DIRECTORY' => 'emedia/files/',
+			'UPLOADS_DIRECTORY'   => 'esystem/temp/',
+			'SYSTEM_DIRECTORY'    => 'esystem/',
+			'MEDIA_DIRECTORY'     => 'emedia/',
+			'CACHE_DIRECTORY'     => 'esystem/cache/',
+			'LOGS_DIRECTORY'      => 'esystem/logs/',
+			'CORE_DIRECTORY'      => 'ecore/',
+			'WEB_DIRECTORY'       => 'eweb/',
+
 		);
 	}
 
