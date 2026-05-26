@@ -811,18 +811,18 @@ class e107
 	public function defaultDirs($override_root = array(), $return_root = false)
 	{
 		$ret = array_merge(array(
-			'ADMIN_DIRECTORY' 		=> 'e107_admin/',
-			'IMAGES_DIRECTORY' 		=> 'e107_images/',
-			'THEMES_DIRECTORY' 		=> 'e107_themes/',
-			'PLUGINS_DIRECTORY' 	=> 'e107_plugins/',
-			'FILES_DIRECTORY' 		=> 'e107_files/', // DEPRECATED!!!
-			'HANDLERS_DIRECTORY' 	=> 'e107_handlers/',
-			'LANGUAGES_DIRECTORY' 	=> 'e107_languages/',
-			'DOCS_DIRECTORY' 		=> 'e107_docs/',
-			'MEDIA_DIRECTORY' 		=> 'e107_media/',
-			'SYSTEM_DIRECTORY' 		=> 'e107_system/',
-			'CORE_DIRECTORY' 		=> 'e107_core/',
-			'WEB_DIRECTORY' 		=> 'e107_web/',
+			'ADMIN_DIRECTORY' 		=> 'eadmin/',
+			'IMAGES_DIRECTORY' 		=> 'eimages/',
+			'THEMES_DIRECTORY' 		=> 'ethemes/',
+			'PLUGINS_DIRECTORY' 	=> 'eplugins/',
+			'FILES_DIRECTORY' 		=> 'efiles/', // DEPRECATED!!!
+			'HANDLERS_DIRECTORY' 	=> 'ehandlers/',
+			'LANGUAGES_DIRECTORY' 	=> 'elanguages/',
+			'DOCS_DIRECTORY' 		=> 'edocs/',
+			'MEDIA_DIRECTORY' 		=> 'emedia/',
+			'SYSTEM_DIRECTORY' 		=> 'esystem/',
+			'CORE_DIRECTORY' 		=> 'ecore/',
+			'WEB_DIRECTORY' 		=> 'eweb/',
 		), (array) $override_root);
 
 		$ret['MEDIA_BASE_DIRECTORY'] = $ret['MEDIA_DIRECTORY'];
