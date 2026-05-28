@@ -748,6 +748,16 @@ $dbg->logTime('Load Plugin Modules');
 $js_body_onload = array();			// Initialise this array in case a module wants to add to it
 
 // Load e_modules after all the constants, but before the themes, so they can be put to use.
+// LITE MODIFICATION: plugin e_module include is placed BEFORE the
+// e_SIGNUP / e_LOGIN defines below (upstream includes e_module AFTER
+// them, at the equivalent of class2.php:749). Reason: this lets a
+// plugin's e_module.php redefine e_SIGNUP / e_LOGIN with custom
+// login/registration URLs — upstream defines e_SIGNUP unconditionally
+// before e_module runs, so upstream cannot support that override.
+// Do NOT move this back after the defines on upstream sync.
+// Revert condition: upstream moves its e_module include before the
+// e_SIGNUP/e_LOGIN defines (i.e. adopts this ordering).
+
 if(!isset($_E107['no_module']))
 {
 	if(isset($pref['e_module_list']) && $pref['e_module_list'])
