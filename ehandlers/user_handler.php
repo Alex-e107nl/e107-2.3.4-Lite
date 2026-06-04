@@ -1159,16 +1159,12 @@ class e_user_provider
 	 */
 	public function __construct($provider = null, $config = array(), $suppress_exceptions = true)
 	{
-		// LITE MODIFICATION: social-login constructor guards.
-		// social is an external plugin in Lite (not part of core).
-		// Returns early if the plugin is not installed or its config
-		// file is absent. Safer than upstream, not weaker. Reported
-		// upstream as e107inc/e107#5683 — remove this guard when
-		// upstream adopts the fail-fast check, or if social is
-		// brought back into core.
-		if(!e107::isInstalled('social')) return;
-		if (!file_exists(e_PLUGIN . "social/includes/social_login_config.php")) return;
-		
+		// social is a non-core plugin and may not be installed. Bail out cleanly
+		// before the include so it doesn't attempt (and log, despite the leading @)
+		// a failed-to-open-stream warning on every instantiation. See e107inc/e107#5683.
+		if (!e107::isInstalled('social')) return;
+		if (!is_readable(e_PLUGIN . "social/includes/social_login_config.php")) return;
+
 		@include_once(e_PLUGIN . "social/includes/social_login_config.php");
 		if (!class_exists('social_login_config')) return;
 
