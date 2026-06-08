@@ -1190,6 +1190,9 @@ class plugin_online_ui extends e_admin_ui
 				return null;
 			}
 
+			// install=0 => download only (re-download / refresh files, no install routine)
+			$doInstall = !(isset($_GET['install']) && (string) $_GET['install'] === '0');
+
 			if (deftrue('e_DEBUG_MARKETPLACE'))
 			{
 				echo "<b>DEBUG MODE ACTIVE (no downloading)</b><br />";
@@ -1211,15 +1214,22 @@ class plugin_online_ui extends e_admin_ui
 			{
 				$this->pluginCheck(true); // rescan plugin directory
 
-				$text = e107::getPlugin()->install($params['folder']);
-				$mes->addInfo($text);
-
-				// Show upgrade button if local version is behind plugin.xml version
-				$upgradable = e107::getPlug()->getUpgradableList();
-				if (!empty($upgradable[$params['folder']]))
+				if ($doInstall)
 				{
-					$upgradeUrl = e_ADMIN . "plugin.php?mode=installed&action=upgrade&path=" . $params['folder'] . "&e-token=" . defset('e_TOKEN');
-					$mes->addSuccess("<a target='_top' href='" . $upgradeUrl . "' class='btn btn-primary'>" . LAN_UPDATE . "</a>");
+					$text = e107::getPlugin()->install($params['folder']);
+					$mes->addInfo($text);
+
+					// Show upgrade button if local version is behind plugin.xml version
+					$upgradable = e107::getPlug()->getUpgradableList();
+					if (!empty($upgradable[$params['folder']]))
+					{
+						$upgradeUrl = e_ADMIN . "plugin.php?mode=installed&action=upgrade&path=" . $params['folder'] . "&e-token=" . defset('e_TOKEN');
+						$mes->addSuccess("<a target='_top' href='" . $upgradeUrl . "' class='btn btn-primary'>" . LAN_UPDATE . "</a>");
+					}
+				}
+				else
+				{
+					$mes->addSuccess('Files downloaded. Plugin was not installed - use Install to enable it.');
 				}
 
 				echo $mes->render('default', 'success');
@@ -1830,27 +1840,21 @@ class plugin_form_online_ui extends e_admin_form_ui
 
 	function options($bla, $data)
 	{
-		$action = $this->getController()->getAction();
-
-		if(e107::isInstalled($data['folder']))
-		{
-			if($action === 'grid')
-			{
-				return "<button class='btn btn-sm btn-default btn-secondary' disabled>".LAN_INSTALLED."</button>";
-			}
-
-			return '&nbsp; <span class="label label-default">'.LAN_INSTALLED."</span>";
-			return null;
-		}
-
-		// Info buttons — repo source and optional info URL.
-		// Always available regardless of installable state.
 		$tp     = e107::getParser();
+		$action = $this->getController()->getAction();
+		$isGrid = ($action === 'grid');
+
 		$params = isset($data['params']) ? $data['params'] : array();
 		$org    = isset($params['organization']) ? $params['organization'] : '';
-		$repo   = isset($params['repo']) ? $params['repo'] : '';
-		$branch = isset($params['branch']) ? $params['branch'] : 'main';
+		$repo   = isset($params['repo'])         ? $params['repo']         : '';
+		$branch = isset($params['branch'])       ? $params['branch']       : 'main';
+		$folder = isset($data['folder'])         ? $data['folder']         : '';
 
+		// -------------------------------------------------------------
+		// Info buttons (GitHub repo + info URL) - ALWAYS shown, including
+		// for already-installed plugins. Built first so every branch can
+		// append them.
+		// -------------------------------------------------------------
 		$infoButtons = '';
 
 		if(!empty($org) && !empty($repo))
@@ -1862,79 +1866,130 @@ class plugin_form_online_ui extends e_admin_form_ui
 			$infoButtons .= ' <a class="btn btn-sm btn-default btn-secondary" '
 				. 'href="'.$tp->toAttribute($repoUrl).'" target="_blank" rel="noopener" '
 				. 'title="View repository on GitHub">'
-				. '<i class="fa fa-github"></i></a>';
+				. $tp->toGlyph('fa-github').'</a>';
 		}
 
 		if(!empty($data['urlView']))
 		{
-			$infoUrl = $data['urlView'];
-
 			$infoButtons .= ' <a class="btn btn-sm btn-default btn-secondary" '
-				. 'href="'.$tp->toAttribute($infoUrl).'" target="_blank" rel="noopener" '
+				. 'href="'.$tp->toAttribute($data['urlView']).'" target="_blank" rel="noopener" '
 				. 'title="More information">'
-				. '<i class="fa fa-external-link"></i></a>';
+				. $tp->toGlyph('fa-external-link').'</a>';
 		}
 
-		// Registry-rules runtime gate — disable Install when remote plugin.xml is missing or invalid.
+		// -------------------------------------------------------------
+		// Download button - download ONLY (no install). Available for
+		// every entry, including installed plugins (re-download / refresh
+		// files without re-running the install routine).
+		// -------------------------------------------------------------
+		$downloadButton = '';
+
+		if(!empty($org) && !empty($repo) && !empty($folder))
+		{
+			$dlSrc = array(
+				'mode'         => 'online',
+				'action'       => 'download',
+				'install'      => 0,            // download only - do NOT install
+				'organization' => $org,
+				'repo'         => $repo,
+				'branch'       => $branch,
+				'folder'       => $folder,
+				'e-token'      => defset('e_TOKEN'),
+			);
+			$dlUrl     = e_SELF . '?' . http_build_query($dlSrc);
+			$dlCaption = LAN_DOWNLOAD . ' ' . $data['name'] . ' ' . $data['version'];
+			$dlInner   = $isGrid ? ($tp->toGlyph('fa-download').' '.LAN_DOWNLOAD) : $tp->toGlyph('fa-download');
+			$dlClass   = $isGrid ? 'btn btn-sm btn-default' : 'btn btn-sm btn-default btn-secondary';
+
+			$downloadButton = ' <a title="'.$tp->toAttribute(LAN_DOWNLOAD).'" class="e-modal '.$dlClass.'" '
+				. 'href="'.$dlUrl.'" rel="external" '
+				. 'data-loading="'.e_IMAGE.'/generic/loading_32.gif" data-cache="false" '
+				. 'data-modal-caption="'.$tp->toAttribute($dlCaption).'" target="_blank">'.$dlInner.'</a>';
+		}
+
+		// -------------------------------------------------------------
+		// Installed - status + download (re-download) + info buttons.
+		// -------------------------------------------------------------
+		if(e107::isInstalled($folder))
+		{
+			$status = $isGrid
+				? '<button class="btn btn-sm btn-default btn-secondary" disabled>'.LAN_INSTALLED.'</button>'
+				: '&nbsp; <span class="label label-default">'.LAN_INSTALLED.'</span>';
+
+			return $status . $downloadButton . $infoButtons;
+		}
+
+		// -------------------------------------------------------------
+		// Compatibility check - applies to BOTH list and grid, so an
+		// incompatible plugin is flagged with the warning colour in either
+		// view (previously only the grid showed it).
+		// -------------------------------------------------------------
+		$compatWarning = false;
+		$version       = $tp->filter(e_VERSION, 'version');
+		$compat        = (float) $tp->filter($data['compatibility'], 'version');
+
+		if($compat == 2)
+		{
+			$compat = $version;
+		}
+
+		if(!e107::isCompatible($compat, 'plugin'))
+		{
+			$compatWarning = true;
+		}
+
+		// -------------------------------------------------------------
+		// Not installable (remote plugin.xml missing/invalid) - disable
+		// Install, but still allow download + info buttons.
+		// -------------------------------------------------------------
 		if(isset($data['installable']) && $data['installable'] === false)
 		{
 			$errAttr  = $tp->toAttribute(isset($data['install_error']) ? $data['install_error'] : '');
-			$label    = EPL_ADLAN_0;
-			$btnClass = ($action === 'grid') ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-default btn-secondary';
-			$inner    = ($action === 'grid') ? ($tp->toGlyph('fa-bolt').$label) : ADMIN_INSTALLPLUGIN_ICON;
+			$inner    = $isGrid ? ($tp->toGlyph('fa-bolt').' '.EPL_ADLAN_0) : $tp->toGlyph('fa-bolt');
+			$btnClass = $isGrid ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-default btn-secondary';
 
-			return '<button type="button" class="'.$btnClass.'" disabled title="'.$errAttr.'">'.$inner.'</button>' . $infoButtons;
+			$installButton = '<button type="button" class="'.$btnClass.'" disabled title="'.$errAttr.'">'.$inner.'</button>';
+
+			return $installButton . $downloadButton . $infoButtons;
 		}
 
-
-		$id = 'plug_'.$data['params']['id'];
-		$modalCaption = (!empty($data['price'])) ? EPL_ADLAN_92." ".$data['name']." ".$data['version'] : EPL_ADLAN_230." ".$data['name']." ".$data['version'];
+		// -------------------------------------------------------------
+		// Installable & not installed - Install (download + install).
+		// -------------------------------------------------------------
+		$modalCaption = (!empty($data['price']))
+			? EPL_ADLAN_92.' '.$data['name'].' '.$data['version']
+			: EPL_ADLAN_230.' '.$data['name'].' '.$data['version'];
 
 		$srcData = array(
 			'mode'         => 'online',
 			'action'       => 'download',
-			'organization' => $data['params']['organization'],
-			'repo'         => $data['params']['repo'],
-			'branch'       => $data['params']['branch'],
-			'folder'       => $data['folder'],
+			'install'      => 1,            // download + install
+			'organization' => $org,
+			'repo'         => $repo,
+			'branch'       => $branch,
+			'folder'       => $folder,
 			'e-token'      => defset('e_TOKEN'),
 		);
 		$url = e_SELF . '?' . http_build_query($srcData);
 
-		$button = ADMIN_INSTALLPLUGIN_ICON;
-		$class = 'btn btn-sm btn-default btn-secondary';
-		$disable = '';
-		$title = EPL_ADLAN_237;
-		$tp = e107::getParser();
+		$title = $compatWarning ? 'Install: May not be compatible' : EPL_ADLAN_237;
+		$inner = $isGrid ? ($tp->toGlyph('fa-bolt').' '.ADLAN_121) : $tp->toGlyph('fa-bolt');
 
-		if($action === 'grid')
+		if($isGrid)
 		{
-			$button = e107::getParser()->toGlyph('fa-bolt').ADLAN_121; // Install
-			$class = 'btn btn-sm btn-primary';
-
-			$version = $tp->filter(e_VERSION,'version');
-			$compat = (float)  $tp->filter($data['compatibility'], 'version');
-
-			if($compat == 2)
-			{
-				$compat = $version;
-			}
-
-
-			if(!e107::isCompatible($compat, 'plugin'))
-			{
-				$button = e107::getParser()->toGlyph('fa-bolt').ADLAN_121;
-				$class = 'btn btn-sm btn-warning';
-			//	$disable = 'data-confirm="This plugin may not be compatible with your version of e107. Are you sure?"';
-				$title = "Install: May not be compatible";
-			}
+			$btnClass = $compatWarning ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-primary';
+		}
+		else
+		{
+			$btnClass = $compatWarning ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-default btn-secondary';
 		}
 
+		$installButton = '<a title="'.$tp->toAttribute($title).'" class="e-modal '.$btnClass.'" '
+			. 'href="'.$url.'" rel="external" '
+			. 'data-loading="'.e_IMAGE.'/generic/loading_32.gif" data-cache="false" '
+			. 'data-modal-caption="'.$tp->toAttribute($modalCaption).'" target="_blank">'.$inner.'</a>';
 
-		return '<a title="'.$title.'" '.$disable.' class="e-modal '.$class.'" href="'.$url.'" rel="external" data-loading="'.e_IMAGE.'/generic/loading_32.gif"  data-cache="false" data-modal-caption="'.$tp->toAttribute($modalCaption).'"  target="_blank" >'.$button.'</a>' . $infoButtons;
-	//	$dicon = "<a data-toggle='modal' data-bs-toggle='modal' data-modal-caption=\"Downloading ".$data['plugin_name']." ".$data['plugin_version']."\" href='{$url}' data-cache='false' data-target='#uiModal' title='".LAN_DOWNLOAD."' ><img class='top' src='".e_IMAGE_ABS."icons/download_32.png' alt=''  /></a> ";
-
-
+		return $installButton . $downloadButton . $infoButtons;
 	}
 
 }
