@@ -172,7 +172,7 @@ class e107
 	 */
 	protected static $_known_handlers = array(
 		'UserHandler'                    => '{e_HANDLER}user_handler.php',
-		'comment'                        => '{e_PLUGIN}comment/handlers/comment_class.php',
+		'comment'                        => '{e_HANDLER}comment_class.php',
 		'e_date'                         => '{e_HANDLER}date_handler.php',
 		'convert'                        => '{e_HANDLER}date_handler.php', // BC Fix.
 		'db'                             => '{e_HANDLER}e_db_pdo_class.php',
@@ -255,7 +255,7 @@ class e107
 		'news'                           => '{e_HANDLER}news_class.php',
 		'notify'                         => '{e_HANDLER}notify_class.php',
 		'override'                       => '{e_HANDLER}override_class.php',
-		'rater'                          => '{e_PLUGIN}rater/handlers/rate_class.php',
+		'rater'                          => '{e_HANDLER}rate_class.php',
 		'redirection'                    => '{e_HANDLER}redirection_class.php',
 		'secure_image'                   => '{e_HANDLER}secure_img_handler.php',
 		'sitelinks'                      => '{e_HANDLER}sitelinks_class.php',
@@ -418,7 +418,7 @@ class e107
 	//		self::plugLan($plug_name, 'front'); // English_front.php
 			self::plugLan($plug_name, null); // English.php
 			self::plugLan($plug_name, 'global', true); // English/English_global.php
-			//self::plugLan($plug_name, 'global'); // English_global.php One rule
+			self::plugLan($plug_name, 'global'); // English_global.php
 		}
 	}
 
@@ -1738,16 +1738,6 @@ class e107
 	 */
 	public static function getRate()
 	{
-		// LITE MODIFICATION: isInstalled() guard.
-		// comment / rater are externalised plugins in Lite (not part of
-		// core). The guard prevents getSingleton() from failing when the
-		// plugin is absent. Remove only if comment/rater come back into
-		// core.
-		if (!e107::isInstalled('rater'))
-		{
-			return null;
-		}
-
 		return self::getSingleton('rater');
 	}
 
@@ -2321,16 +2311,6 @@ class e107
 	 */
 	public static function getComment()
 	{
-		// LITE MODIFICATION: isInstalled() guard.
-		// comment / rater are externalised plugins in Lite (not part of
-		// core). The guard prevents getSingleton() from failing when the
-		// plugin is absent. Remove only if comment/rater come back into
-		// core.
-		if (!e107::isInstalled('comment'))
-		{
-			return null;
-		}
-
 		return self::getSingleton('comment');
 	}
 
@@ -5729,8 +5709,6 @@ class e107
 			define('SITEURLBASE', $this->HTTP_SCHEME.'://'. filter_var($http_host, FILTER_SANITIZE_URL));
 			define('SITEURL', SITEURLBASE.e_HTTP);
 		}
-
-
 
 
 		return $this;
