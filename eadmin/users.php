@@ -315,7 +315,8 @@ class users_admin_ui extends e_admin_ui
  		'user_image' 		=> array('title' => LAN_USER_07,	'tab'=>0, 'type' => 'dropdown',	'data'=>'str', 'width' => 'auto'), // Avatar
  		'user_email' 		=> array('title' => LAN_EMAIL,		'tab'=>0, 'type' => 'text', 'inline'=>true, 'data'=>'safestr',	'width' => 'auto', 'writeParms'=>array('size'=>'xxlarge')),
 		'user_hideemail' 	=> array('title' => LAN_USER_10,	'tab'=>0, 'type' => 'boolean', 'data'=>'int',	'width' => 'auto', 'thclass'=>'center', 'class'=>'center', 'filter'=>true, 'batch'=>true, 'readParms'=>'trueonly=1'),
-		'user_xup' 			=> array('title' => 'Xup',			'tab'=>0, 'noedit'=>true, 'type' => 'text', 'data'=>'str',	'width' => 'auto'),
+// Lite modification (time being, can be overridden later): user_xup repurposed as legacy-DB nick → make it editable in admin.		
+		'user_xup' 			=> array('title' => 'Xup',			'tab'=>0, 'noedit'=>false, 'type' => 'text', 'data'=>'str',	'width' => 'auto'),
 		'user_class' 		=> array('title' => LAN_USER_12,	'tab'=>0, 'type' => 'userclasses' , 'data'=>'safestr', 'inline'=>true, 'writeParms' => 'classlist=classes,new', 'readParms'=>'classlist=classes,new&defaultLabel=--', 'filter'=>true, 'batch'=>true),
 		'user_join' 		=> array('title' => LAN_USER_14,	'tab'=>0, 'noedit'=>true, 'type' => 'datestamp', 	'width' => 'auto', 'writeParms'=>'readonly=1'),
 		'user_lastvisit' 	=> array('title' => LAN_USER_15,	'tab'=>0, 'noedit'=>true, 'type' => 'datestamp', 	'width' => 'auto'),
