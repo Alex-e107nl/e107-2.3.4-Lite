@@ -63,6 +63,12 @@ class installLog
 
 	const logFile = "e107Install.log";
 
+	// The install log lives under e107_system/, whose shipped .htaccess denies
+	// web access. The per-site logs directory (e107_system/<hash>/logs) needs the
+	// site hash, which is not known this early - it derives from the database name
+	// and prefix collected mid-wizard - so the installer logs to the system root.
+	const logDir = "e107_system";
+
 
 	static function exceptionHandler(Exception $exception)
 	{
@@ -113,13 +119,15 @@ class installLog
 
 	static function clear()
 	{
-		if (!MAKE_INSTALL_LOG || !is_writable(__DIR__))
+		$dir = __DIR__ .'/'.self::logDir;
+		if(!MAKE_INSTALL_LOG || !is_writable($dir))
 		{
 			return null;
 		}
 
-		$logFile = __DIR__ . '/' . self::logFile;
-		file_put_contents($logFile, '');
+		$logFile = $dir .'/'.self::logFile;
+		file_put_contents($logFile,'');
+
 	}
 
 	/**
@@ -130,12 +138,13 @@ class installLog
 	 */
 	static function add($message, $type = 'info')
 	{
-		if (!MAKE_INSTALL_LOG || !is_writable(__DIR__))
+		$dir = __DIR__ .'/'.self::logDir;
+		if(!MAKE_INSTALL_LOG || !is_writable($dir))
 		{
 			return null;
 		}
 
-		$logFile = __DIR__ . '/' . self::logFile; // e107InstallLog.log';
+		$logFile = $dir .'/'.self::logFile;
 
 		$now    = time();
 		$message = $now . ', ' . date('c') . "\t" . $type . "\t" . $message . "\n";
