@@ -13,6 +13,18 @@
   </plugin>
   <plugin
     organization="Jimako-e107-plugins"
+    repo="e107-navatar-plugin"
+    folder="navatar"
+    branch="main"
+    name="Navatar"
+    compatibility="2.3"
+    infourl="https://github.com/Jimako-e107-plugins/navatar"
+  >
+    <description>A plugin that generates user avatar that has your initials</description>
+  </plugin>
+
+  <plugin
+    organization="Jimako-e107-plugins"
     repo="chatbox"
     folder="chatbox"
     branch="main"
