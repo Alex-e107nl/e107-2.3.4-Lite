@@ -1082,7 +1082,7 @@ class pageClass
 	function pageRating($page_rating_flag)
 	{
 		
-		if($page_rating_flag && e107::isInstalled("rater"))
+		if($page_rating_flag)
 		{
 			return "<br /><div style='text-align:right'>".e107::getRate()->render("page", $this->pageID,array('label'=>LAN_PAGE_4))."</div>";
 			
@@ -1097,7 +1097,7 @@ class pageClass
 
 	function pageComment($page_comment_flag)
 	{
-		if($page_comment_flag && e107::isInstalled("comment") )
+		if($page_comment_flag)
 		{
 			$cobj = e107::getComment();
 

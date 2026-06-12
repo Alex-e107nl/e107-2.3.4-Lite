@@ -191,7 +191,7 @@ class cpage_shortcodes extends e_shortcode
 		$com 		= $this->var['comments'];
 		$comflag 	= $this->var['page_comment_flag'];
 
-		if(e107::getPref('comments_disabled') == 0   ) 
+		if(e107::getPref('comments_disabled') == 0 && !$comflag)
 		{
 			if(ADMIN && deftrue('e_DEBUG'))
 			{
@@ -207,7 +207,7 @@ class cpage_shortcodes extends e_shortcode
 		}
 		
 		//if($parm && isset($com[$parm])) return $com[$parm];
-		if($comflag && !$comflag && e107::isInstalled("comment") )
+		if($comflag)
 		{
 			return e107::getComment()->parseLayout($com['comment'],$com['comment_form'],$com['moderate']);	
 		}
