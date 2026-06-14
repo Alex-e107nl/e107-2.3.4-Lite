@@ -13,16 +13,26 @@
   </plugin>
   <plugin
     organization="Jimako-e107-plugins"
-    repo="e107-navatar-plugin"
-    folder="navatar"
+    repo="e107-turnstile-plugin"
+    folder="turnstile"
     branch="main"
-    name="Navatar"
+    name="Turnstile"
     compatibility="2.3"
-    infourl="https://github.com/Jimako-e107-plugins/navatar"
+    infourl="https://github.com/Jimako-e107-plugins/turnstile"
   >
-    <description>A plugin that generates user avatar that has your initials</description>
+    <description>A drop-in replacement for the e107 captcha, making your site more use-friendly and secure</description>
   </plugin>
-
+  <plugin
+    organization="Jimako-e107-plugins"
+    repo="e107-ulflags-plugin"
+    folder="ulflags"
+    branch="main"
+    name="User Languages Flags"
+    compatibility="2.3"
+    infourl="https://github.com/Jimako-e107-plugins/ulflags"
+  >
+    <description>This menu selection allows users to choose the language translation./description>
+  </plugin>
   <plugin
     organization="Jimako-e107-plugins"
     repo="chatbox"
